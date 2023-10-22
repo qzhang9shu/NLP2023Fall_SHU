@@ -8,7 +8,6 @@ from datasets import *
 from utils import *
 from nltk.translate.bleu_score import corpus_bleu
 
-
 # Parameters
 data_folder = './results/caption'  # folder with data files saved by create_input_files.py
 data_name = 'coco_cap_5_freq_5'  # base name shared by data files
@@ -141,6 +140,7 @@ def evaluate(beam_size):
             # Proceed with incomplete sequences
             if k == 0:
                 break
+
             seqs = seqs[incomplete_inds]
             h = h[prev_word_inds[incomplete_inds]]
             c = c[prev_word_inds[incomplete_inds]]
@@ -153,7 +153,11 @@ def evaluate(beam_size):
                 break
             step += 1
 
-        i = complete_seqs_scores.index(max(complete_seqs_scores))
+        if max(complete_seqs_scores, default=0) in complete_seqs_scores:
+            i = complete_seqs_scores.index(max(complete_seqs_scores, default=0))
+        else:
+            continue
+
         seq = complete_seqs[i]
 
         # References
