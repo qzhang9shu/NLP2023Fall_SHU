@@ -1,17 +1,22 @@
-import json
+# -*- coding: utf-8 -*-
 import numpy as np
 import argparse
-
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 
 import torch
 import torch.nn.functional as torch_nn_f
 import torchvision.transforms as transforms
 
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+
 import skimage.transform
 from imageio.v2 import imread
 from PIL import Image
+
+from translate import *
+
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
 
 
 def caption_image_beam_search(device, encoder, decoder, image_path, word_map, beam_size=3):
@@ -164,26 +169,43 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
     image = image.resize((14 * 24, 14 * 24), Image.Resampling.LANCZOS)
 
     words = [rev_word_map[ind] for ind in seq]
+    text_en = ' '.join(words[1:-1])
+    text_cn = translate_baidu(text_en, 'en', 'zh')
 
+    plt.figure(1)
     for t in range(len(words)):
         if t > 50:
             break
+
         plt.subplot(int(np.ceil(len(words) / 5.)), 5, t + 1)
 
         plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=12)
         plt.imshow(image)
         current_alpha = alphas[t, :]
+
         if smooth:
             alpha = skimage.transform.pyramid_expand(current_alpha.numpy(), upscale=24, sigma=8)
         else:
             alpha = skimage.transform.resize(current_alpha.numpy(), [14 * 24, 14 * 24])
+
         if t == 0:
             plt.imshow(alpha, alpha=0)
         else:
             plt.imshow(alpha, alpha=0.8)
+
         plt.set_cmap(cm.Greys_r)
         plt.axis('off')
 
+    plt.figure(2)
+
+    text_x = image.size[0] / 2
+    text_y_cn = image.size[1] + 10
+    text_y_en = image.size[1] + 30
+
+    plt.imshow(image)
+    plt.text(text_x, text_y_cn, text_cn, ha='center', va='center', color='black', fontsize=12)
+    plt.text(text_x, text_y_en, text_en, ha='center', va='center', color='black', fontsize=12)
+    plt.axis('off')
     plt.show()
 
 
