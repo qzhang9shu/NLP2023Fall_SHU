@@ -48,6 +48,7 @@
   ├── eval.py: 评估模型
   ├── models.py: 定义模型结构
   ├── train.py: 训练模型
+  ├── translate.py: 提供翻译功能（此文件内API需自行提供）
   └── utils.py: 包含其它各种功能函数的辅助文件
 ```
 
