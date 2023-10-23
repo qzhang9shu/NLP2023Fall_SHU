@@ -7,6 +7,7 @@ import torchvision.transforms as transforms
 from datasets import *
 from utils import *
 from nltk.translate.bleu_score import corpus_bleu
+from rouge import Rouge
 
 # Parameters
 data_folder = './results/caption'  # folder with data files saved by create_input_files.py
@@ -34,6 +35,24 @@ vocab_size = len(wordmap)
 # Normalization transform
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
+
+
+def get_rouge_scores(references, hypotheses):
+    hyps = list()
+    refs = list()
+
+    for hyp_words in hypotheses:
+        text = ' '.join(map(str, hyp_words))
+        hyps.append(text)
+
+    for ref_words in references:
+        text = ' '.join(map(str, ref_words[0]))
+        refs.append(text)
+
+    rouge = Rouge()
+    scores = rouge.get_scores(hyps, refs, avg=True)
+
+    return scores
 
 
 def evaluate(beam_size):
@@ -172,12 +191,17 @@ def evaluate(beam_size):
 
         assert len(references) == len(hypotheses)
 
-    # Calculate BLEU-4 scores
-    bleu4 = corpus_bleu(references, hypotheses)
+    # Calculate BLEU-4 & ROUGE scores
+    bleu4_score = corpus_bleu(references, hypotheses)
+    rouge_score = get_rouge_scores(references, hypotheses)
 
-    return bleu4
+    return bleu4_score, rouge_score
 
 
 if __name__ == '__main__':
     beam_size = 1
-    print("\nBLEU-4 score @ beam size of %d is %.4f." % (beam_size, evaluate(beam_size)))
+    bleu4_s, rouge_s = evaluate(beam_size)
+
+    print("\nBLEU-4 score @ beam size of %d is %.4f." % (beam_size, bleu4_s))
+    print("\nROUGE score @ beam size of %d is " % beam_size)
+    print(rouge_s)
