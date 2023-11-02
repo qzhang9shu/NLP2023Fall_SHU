@@ -1,3 +1,6 @@
+#
+这是一个基于 `Transformer` 和 `Hugginface` 中 `mT5` 两个模型的生成式文本摘要任务的实现.
+
 ## USAGE
 `python3 main.py --type="train" --pre2train="True/False"` to train
 
