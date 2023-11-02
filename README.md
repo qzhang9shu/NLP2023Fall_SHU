@@ -48,11 +48,12 @@
 You can modify the project in parser.py
 
 ## Pretrained mode
+
 You can use Hugging Face pretrained model to process the target, but make sure there are enough GPU memory.
 run `bash run_summarization_mT5.sh` to make it, and modify in `mT5/arg.py` to fine tune.
 
 ## REFERENCE
-[The Annotated Transformer](https://nlp.seas.harvard.edu/2018/04/03/attention.html)(一定要看这篇！！！可以直接看英文/上网搜翻译或者机翻)
+[The Annotated Transformer](https://nlp.seas.harvard.edu/2018/04/03/attention.html)
 
 [Transformer --郑之杰](https://0809zheng.github.io/2020/04/25/transformer.html)
 
